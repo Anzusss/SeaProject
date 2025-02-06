@@ -12,6 +12,7 @@ namespace pruebaaa.Clases
 {
     internal class Chorarios
     {
+        Cregistromovimientos regis = new Cregistromovimientos();
         private Cconexion conexion;
         public Chorarios()
         {
@@ -215,7 +216,7 @@ namespace pruebaaa.Clases
             try
             {
                 conex = new Cconexion().establecerConexion();
-                string query = "SELECT id, nombre, capacidad FROM aulas ORDER BY id"; // Filtrar por disponibilidad
+                string query = "SELECT id, nombre, capacidad FROM aulas where disponible = 'Si' ORDER BY id"; // Filtrar por disponibilidad
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
                 using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -445,24 +446,41 @@ JOIN
             }
         }
 
-        public void eliminarHorario(TextBox id)
+        public void eliminarHorario(int usuarioID, TextBox id)
         {
+            Cconexion objConex = new Cconexion();
             try
             {
-                Cconexion objConex = new Cconexion();
-                string query = "delete from horario where id ='" + id.Text + "';";
-                MySqlCommand cmd = new MySqlCommand(query, objConex.establecerConexion());
-                MySqlDataReader reader = cmd.ExecuteReader();
-                MessageBox.Show("Se elimino correctamente el aula");
-                while (reader.Read())
-                {
+                string query = "DELETE FROM horario WHERE id = @id"; // Usar un parámetro en lugar de concatenar
 
+                using (MySqlCommand cmd = new MySqlCommand(query, objConex.establecerConexion()))
+                {
+                    // Asignar el valor del parámetro
+                    cmd.Parameters.AddWithValue("@id", id.Text);
+
+                    // Ejecutar la consulta
+                    int rowsAffected = cmd.ExecuteNonQuery(); // Cambiar a ExecuteNonQuery para DELETE
+
+                    if (rowsAffected > 0)
+                    {
+                        MessageBox.Show("Se eliminó correctamente el horario.");
+
+                        // Registrar el movimiento de eliminación
+                        regis.RegistrarMovimiento(usuarioID, $"Eliminó horario con ID: {id.Text}");
+                    }
+                    else
+                    {
+                        MessageBox.Show("No se encontró un horario con ese ID.");
+                    }
                 }
-                objConex.cerrarConexion();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("No se eliminaron las aulas correctamente: " + ex.ToString());
+                MessageBox.Show("No se eliminaron los horarios correctamente: " + ex.Message);
+            }
+            finally
+            {
+                objConex.cerrarConexion(); // Asegúrate de cerrar la conexión en el bloque finally
             }
         }
     }

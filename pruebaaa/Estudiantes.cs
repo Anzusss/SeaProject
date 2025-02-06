@@ -101,9 +101,11 @@ namespace pruebaaa
                 string telefono = txtTlf.Text.Trim();
                 string email = txtEmail.Text.Trim();
 
+                int usuarioId = ((SEA)this.Owner).UsuarioId;
+
                 Cdatos datos = new Cdatos();
                 bool resultado = datos.AgregarEstudiante(
-                    cedula, nombre, apellido, sexo,
+                    usuarioId, cedula, nombre, apellido, sexo,
                     telefono, email);
 
                 if (resultado)
@@ -174,10 +176,11 @@ namespace pruebaaa
                     string sexo = cmbSexo.SelectedItem?.ToString().Trim() ?? "";
                     string telefono = txtTlf.Text.Trim();
                     string email = txtEmail.Text.Trim();
+                    int usuarioId = ((SEA)this.Owner).UsuarioId;
 
                     Cdatos datos = new Cdatos();
                     bool modificacionExitosa = datos.ModificarEstudiante(
-                        id, cedula, nombre, apellido, sexo,
+                        usuarioId, id, cedula, nombre, apellido, sexo,
                         telefono, email);
 
                     if (modificacionExitosa)
@@ -185,6 +188,8 @@ namespace pruebaaa
                         // Actualizar el ComboBox y limpiar campos
                         ActualizarComboBoxEstudiantes();
                         LimpiarCampos();
+                        
+                        
                     }
                 }
             }
@@ -219,7 +224,7 @@ namespace pruebaaa
                     MessageBox.Show("El ID del estudiante no es válido.");
                     return;
                 }
-
+                int usuarioId = ((SEA)this.Owner).UsuarioId;
                 // Mostrar mensaje de confirmación
                 DialogResult resultado = MessageBox.Show(
                     "¿Está seguro que desea eliminar este estudiante?\nEsta acción no se puede deshacer.",
@@ -230,7 +235,7 @@ namespace pruebaaa
                 if (resultado == DialogResult.Yes)
                 {
                     Cdatos datos = new Cdatos();
-                    bool eliminacionExitosa = datos.EliminarEstudiante(id);
+                    bool eliminacionExitosa = datos.EliminarEstudiante(usuarioId,id);
 
                     if (eliminacionExitosa)
                     {

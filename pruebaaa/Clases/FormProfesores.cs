@@ -72,13 +72,15 @@ namespace pruebaaa.Clases
                 string cedula = txtCedula.Text.Trim();
                 string nombre = txtNombre.Text.Trim();
                 string apellido = txtApellido.Text.Trim();
-                string sexo = cmbSexo.SelectedItem?.ToString().Trim() ?? "";
+                string sexo = cmbSexo.SelectedItem.ToString().Trim();
                 string telefono = txtTlf.Text.Trim();
                 string email = txtEmail.Text.Trim();
 
+                int usuarioId = ((SEA)this.Owner).UsuarioId;
+
                 Cprofesores datos = new Cprofesores();
                 bool resultado = datos.AgregarProfesor(
-                    cedula, nombre, apellido, sexo,
+                    usuarioId, cedula, nombre, apellido, sexo,
                     telefono, email);
 
                 if (resultado)
@@ -147,9 +149,11 @@ namespace pruebaaa.Clases
                     string telefono = txtTlf.Text.Trim();
                     string email = txtEmail.Text.Trim();
 
+                    int usuarioId = ((SEA)this.Owner).UsuarioId;
+
                     Cprofesores datos = new Cprofesores();
                     bool modificacionExitosa = datos.ModificarProfesor(
-                        id, cedula, nombre, apellido, sexo,
+                        usuarioId, id, cedula, nombre, apellido, sexo,
                         telefono, email);
 
                     if (modificacionExitosa)
@@ -191,6 +195,7 @@ namespace pruebaaa.Clases
                     return;
                 }
 
+                int usuarioId = ((SEA)this.Owner).UsuarioId;
                 // Mostrar mensaje de confirmación
                 DialogResult resultado = MessageBox.Show(
                     "¿Está seguro que desea eliminar este profesor?\nEsta acción no se puede deshacer.",
@@ -201,7 +206,7 @@ namespace pruebaaa.Clases
                 if (resultado == DialogResult.Yes)
                 {
                     Cprofesores datos = new Cprofesores();
-                    bool eliminacionExitosa = datos.EliminarProfesor(id);
+                    bool eliminacionExitosa = datos.EliminarProfesor(usuarioId,id);
 
                     if (eliminacionExitosa)
                     {

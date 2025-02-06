@@ -5,6 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static pruebaaa.Login;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace pruebaaa.Clases
 {
@@ -17,6 +19,8 @@ namespace pruebaaa.Clases
         {
             conexion = new Cconexion();
         }
+
+        Cregistromovimientos regis = new Cregistromovimientos();
 
         public List<string> ObtenerProfesores()
         {
@@ -83,7 +87,7 @@ namespace pruebaaa.Clases
             return valores;
         }
 
-        public bool AgregarProfesor(string cedula, string nombre, string apellido, string sexo, string telefono, string email)
+        public bool AgregarProfesor(int usuarioID,string cedula, string nombre, string apellido, string sexo, string telefono, string email)
         {
             MySqlConnection conex = null;
             try
@@ -126,6 +130,7 @@ namespace pruebaaa.Clases
                     if (filasAfectadas > 0)
                     {
                         MessageBox.Show("Profesor agregado exitosamente.");
+                        regis.RegistrarMovimiento(usuarioID, $"Agregó un profesor: {nombre} {apellido} (Cédula: {cedula})");
                         return true;
                     }
                     else
@@ -197,7 +202,7 @@ namespace pruebaaa.Clases
             return datos;
         }
 
-        public bool ModificarProfesor(int id, string cedula, string nombre, string apellido, string sexo, string telefono, string email)
+        public bool ModificarProfesor(int usuarioID, int id, string cedula, string nombre, string apellido, string sexo, string telefono, string email)
         {
             MySqlConnection conex = null;
             try
@@ -230,6 +235,7 @@ namespace pruebaaa.Clases
                     if (filasAfectadas > 0)
                     {
                         MessageBox.Show("Profesor modificado exitosamente.");
+                        regis.RegistrarMovimiento(usuarioID, $"Agregó modifico un profesor: {nombre} {apellido} (Cédula: {cedula})");
                         return true;
                     }
                     else
@@ -258,7 +264,7 @@ namespace pruebaaa.Clases
             }
         }
 
-        public bool EliminarProfesor(int id)
+        public bool EliminarProfesor(int usuarioID,int id)
         {
             MySqlConnection conex = null;
             try
@@ -275,6 +281,7 @@ namespace pruebaaa.Clases
                     if (filasAfectadas > 0)
                     {
                         MessageBox.Show("Profesor eliminado exitosamente.");
+                        regis.RegistrarMovimiento(usuarioID, $"Eliminó un profesor");
                         return true;
                     }
                     else

@@ -47,14 +47,16 @@ namespace pruebaaa
         private void btnAgregar_Click(object sender, EventArgs e)
         {
             Clases.Caulas objAulas = new Clases.Caulas();
-            objAulas.agregarAula(txtNombre, txtCapacidad);
+            int usuarioId = ((SEA)this.Owner).UsuarioId;
+            objAulas.agregarAula(usuarioId,txtNombre, txtCapacidad);
             objAulas.mostrarAulas(dgvAulas);
         }
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
             Clases.Caulas objAulas = new Clases.Caulas();
-            objAulas.eliminarAula(txtId);
+            int usuarioId = ((SEA)this.Owner).UsuarioId;
+            objAulas.eliminarAula(usuarioId,txtId);
             objAulas.mostrarAulas(dgvAulas);
         }
 
@@ -67,14 +69,16 @@ namespace pruebaaa
         private void btnModificar_Click(object sender, EventArgs e)
         {
             Clases.Caulas objAulas = new Clases.Caulas();
-            objAulas.modificarAula(txtId, txtNombre, txtCapacidad, cmbDisp);
+            int usuarioId = ((SEA)this.Owner).UsuarioId;
+            objAulas.modificarAula(usuarioId,txtId, txtNombre, txtCapacidad, cmbDisp);
             objAulas.mostrarAulas(dgvAulas);
         }
 
         private void btnModificar_Click_1(object sender, EventArgs e)
         {
             Clases.Caulas objAulas = new Clases.Caulas();
-            objAulas.modificarAula(txtId, txtNombre, txtCapacidad, cmbDisp);
+            int usuarioId = ((SEA)this.Owner).UsuarioId;
+            objAulas.modificarAula(usuarioId,txtId, txtNombre, txtCapacidad, cmbDisp);
             objAulas.mostrarAulas(dgvAulas);
         }
 

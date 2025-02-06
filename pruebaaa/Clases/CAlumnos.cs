@@ -5,6 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static pruebaaa.Login;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace pruebaaa.Clases
 {
@@ -16,6 +18,8 @@ namespace pruebaaa.Clases
         {
             conexion = new Cconexion();
         }
+        
+        Cregistromovimientos regis = new Cregistromovimientos();
 
         public List<string> ObtenerEstudiantes()
         {
@@ -82,7 +86,7 @@ namespace pruebaaa.Clases
             return valores;
         }
 
-        public bool AgregarEstudiante(string cedula, string nombre, string apellido, string sexo, string telefono, string email)
+        public bool AgregarEstudiante(int usuarioID, string cedula, string nombre, string apellido, string sexo, string telefono, string email)
         {
             MySqlConnection conex = null;
             try
@@ -125,6 +129,7 @@ namespace pruebaaa.Clases
                     if (filasAfectadas > 0)
                     {
                         MessageBox.Show("Estudiante agregado exitosamente.");
+                        regis.RegistrarMovimiento(usuarioID, $"Agregó estudiante: {nombre} {apellido} (Cédula: {cedula})");
                         return true;
                     }
                     else
@@ -197,7 +202,7 @@ namespace pruebaaa.Clases
             return datos;
         }
 
-        public bool ModificarEstudiante(int id, string cedula, string nombre, string apellido, string sexo, string telefono, string email)
+        public bool ModificarEstudiante(int usuarioID, int id, string cedula, string nombre, string apellido, string sexo, string telefono, string email)
         {
             MySqlConnection conex = null;
             try
@@ -230,6 +235,7 @@ namespace pruebaaa.Clases
                     if (filasAfectadas > 0)
                     {
                         MessageBox.Show("Estudiante modificado exitosamente.");
+                        regis.RegistrarMovimiento(usuarioID, $"Modifico Estudiante: {nombre} {apellido} (Cédula: {cedula})");
                         return true;
                     }
                     else
@@ -258,23 +264,52 @@ namespace pruebaaa.Clases
             }
         }
 
-        public bool EliminarEstudiante(int id)
+        public bool EliminarEstudiante(int usuarioID, int id)
         {
             MySqlConnection conex = null;
+            string nombre = string.Empty;
+            string apellido = string.Empty;
+            string cedula = string.Empty;
+
             try
             {
                 conex = new Cconexion().establecerConexion();
-                string queryEliminar = "DELETE FROM estudiantes WHERE id = @id";
 
-                using (MySqlCommand cmd = new MySqlCommand(queryEliminar, conex))
+                // Primero, obtenemos los datos del estudiante
+                string queryObtenerDatos = "SELECT nombre, apellido, cedula FROM estudiantes WHERE id = @id";
+                using (MySqlCommand cmdObtenerDatos = new MySqlCommand(queryObtenerDatos, conex))
                 {
-                    cmd.Parameters.AddWithValue("@id", id);
+                    cmdObtenerDatos.Parameters.AddWithValue("@id", id);
+                    using (MySqlDataReader reader = cmdObtenerDatos.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            nombre = reader["nombre"].ToString();
+                            apellido = reader["apellido"].ToString();
+                            cedula = reader["cedula"].ToString();
+                        }
+                        else
+                        {
+                            MessageBox.Show("No se encontró el estudiante para eliminar.");
+                            return false;
+                        }
+                    }
+                }
 
-                    int filasAfectadas = cmd.ExecuteNonQuery();
+                // Ahora eliminamos al estudiante
+                string queryEliminar = "DELETE FROM estudiantes WHERE id = @id";
+                using (MySqlCommand cmdEliminar = new MySqlCommand(queryEliminar, conex))
+                {
+                    cmdEliminar.Parameters.AddWithValue("@id", id);
+                    int filasAfectadas = cmdEliminar.ExecuteNonQuery();
 
                     if (filasAfectadas > 0)
                     {
                         MessageBox.Show("Estudiante eliminado exitosamente.");
+
+                        // Registrar el movimiento con los datos obtenidos
+                        regis.RegistrarMovimiento(usuarioID, $"Eliminó estudiante: {nombre} {apellido} (Cédula: {cedula})");
+
                         return true;
                     }
                     else

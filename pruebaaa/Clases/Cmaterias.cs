@@ -5,12 +5,14 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace pruebaaa.Clases
 {
     internal class Cmaterias
     {
         private Cconexion conexion;
+        Cregistromovimientos regis = new Cregistromovimientos();
 
         public Cmaterias()
         {
@@ -95,7 +97,7 @@ namespace pruebaaa.Clases
             return materias;
         }
 
-        public bool AgregarMateria(string nombre, string descripcion, string categoria)
+        public bool AgregarMateria(int usuarioID,string nombre, string descripcion, string categoria)
         {
             MySqlConnection conex = null;
             try
@@ -135,6 +137,7 @@ namespace pruebaaa.Clases
                     if (filasAfectadas > 0)
                     {
                         MessageBox.Show("Materia agregada exitosamente.");
+                        regis.RegistrarMovimiento(usuarioID, $"Agregó una materia: {nombre}*");
                         return true;
                     }
                     else
@@ -204,7 +207,7 @@ namespace pruebaaa.Clases
             return datos;
         }
 
-        public bool ModificarMateria(int id, string nombre, string descripcion, string categoria)
+        public bool ModificarMateria(int usuarioID, int id, string nombre, string descripcion, string categoria)
         {
             MySqlConnection conex = null;
             try
@@ -226,6 +229,7 @@ namespace pruebaaa.Clases
                     if (filasAfectadas > 0)
                     {
                         MessageBox.Show("Materia modificada exitosamente.");
+                        regis.RegistrarMovimiento(usuarioID, $"Modificó una matera: {nombre}");
                         return true;
                     }
                     else
@@ -254,7 +258,7 @@ namespace pruebaaa.Clases
             }
         }
 
-        public bool EliminarMateria(int id)
+        public bool EliminarMateria(int usuarioID, int id)
         {
             MySqlConnection conex = null;
             try
@@ -271,6 +275,7 @@ namespace pruebaaa.Clases
                     if (filasAfectadas > 0)
                     {
                         MessageBox.Show("Materia eliminada exitosamente.");
+                        regis.RegistrarMovimiento(usuarioID, $"Eliminó una materia");
                         return true;
                     }
                     else

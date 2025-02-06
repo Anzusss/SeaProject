@@ -6,11 +6,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace pruebaaa.Clases
 {
     internal class Caulas
     {
+        Cregistromovimientos regis = new Cregistromovimientos();
         public void mostrarAulas(DataGridView tablaAulas)
         {
 			try
@@ -59,7 +61,7 @@ namespace pruebaaa.Clases
             }
             return valores;
         }
-        public void agregarAula(TextBox nombre, TextBox capacidad)
+        public void agregarAula(int usuarioID, TextBox nombre, TextBox capacidad)
         {
             try
             {
@@ -68,6 +70,7 @@ namespace pruebaaa.Clases
                     "values ('"+ nombre.Text+ "','"+capacidad.Text+"');";
                 MySqlCommand cmd = new MySqlCommand(query, objConex.establecerConexion());
                 MySqlDataReader reader = cmd.ExecuteReader();
+                regis.RegistrarMovimiento(usuarioID, $"Agregó un aula: {nombre}");
                 MessageBox.Show("Se guardo correctamente el aula");
                 while (reader.Read())
                 {
@@ -94,7 +97,7 @@ namespace pruebaaa.Clases
                 MessageBox.Show("No se mostraron las aulas correctamente: " + ex.ToString());
             }
         }
-        public void modificarAula(TextBox id,TextBox nombre, TextBox capacidad, ComboBox disponible)
+        public void modificarAula(int usuarioID,TextBox id,TextBox nombre, TextBox capacidad, ComboBox disponible)
         {
             try
             {
@@ -102,11 +105,13 @@ namespace pruebaaa.Clases
                 string query = "update aulas set nombre='" + nombre.Text + "', capacidad ='" + capacidad.Text + "', disponible ='" + disponible.Text + "' where id ='"+ id.Text+"';";
                 MySqlCommand cmd = new MySqlCommand(query, objConex.establecerConexion());
                 MySqlDataReader reader = cmd.ExecuteReader();
+                
                 MessageBox.Show("Se modifico correctamente el aula");
                 while (reader.Read())
                 {
 
                 }
+                regis.RegistrarMovimiento(usuarioID, "Modificó un aula");
                 objConex.cerrarConexion();
             }
             catch (Exception ex)
@@ -114,7 +119,7 @@ namespace pruebaaa.Clases
                 MessageBox.Show("No se actualizaron las aulas correctamente: " + ex.ToString());
             }
         }
-        public void eliminarAula(TextBox id)
+        public void eliminarAula(int usuarioID,TextBox id)
         {
             try
             {
@@ -122,6 +127,7 @@ namespace pruebaaa.Clases
                 string query = "delete from aulas where id ='" + id.Text + "';";
                 MySqlCommand cmd = new MySqlCommand(query, objConex.establecerConexion());
                 MySqlDataReader reader = cmd.ExecuteReader();
+                regis.RegistrarMovimiento(usuarioID, $"Eliminó un aula");
                 MessageBox.Show("Se elimino correctamente el aula");
                 while (reader.Read())
                 {

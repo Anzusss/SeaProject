@@ -87,10 +87,11 @@ namespace pruebaaa
                 string nombre = txtNombre.Text.Trim();
                 string categoria = cmbCategorias.SelectedValue.ToString(); // Obtiene el ID de la categoría
                 string descripcion = txtDesc.Text.Trim();
+                int usuarioId = ((SEA)this.Owner).UsuarioId;
 
                 Cmaterias datos = new Cmaterias();
                 bool resultado = datos.AgregarMateria(
-                    nombre, descripcion, categoria);
+                    usuarioId,nombre, descripcion, categoria);
 
                 if (resultado)
                 {
@@ -142,6 +143,7 @@ namespace pruebaaa
                 // Asumiendo que tienes un campo oculto con el ID o lo obtienes del estudiante seleccionado
                 int id = Convert.ToInt32(txtId.Text); // Asegúrate de tener este campo en tu formulario
 
+
                 DialogResult resultado = MessageBox.Show(
                     "¿Está seguro que desea modificar esta materia?",
                     "Confirmar Modificación",
@@ -153,10 +155,11 @@ namespace pruebaaa
                     string nombre = txtNombre.Text.Trim();
                     string categoria = cmbCategorias.SelectedValue.ToString(); // Obtiene el ID de la categoría
                     string descripcion = txtDesc.Text.Trim();
+                    int usuarioId = ((SEA)this.Owner).UsuarioId;
 
                     Cmaterias datos = new Cmaterias();
                     bool modificacionExitosa = datos.ModificarMateria(
-                        id, nombre, descripcion, categoria);
+                        usuarioId,id, nombre, descripcion, categoria);
 
                     if (modificacionExitosa)
                     {
@@ -203,11 +206,12 @@ namespace pruebaaa
                     "Confirmar Eliminación",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning);
+                int usuarioId = ((SEA)this.Owner).UsuarioId;
 
                 if (resultado == DialogResult.Yes)
                 {
                     Cmaterias datos = new Cmaterias();
-                    bool eliminacionExitosa = datos.EliminarMateria(id);
+                    bool eliminacionExitosa = datos.EliminarMateria(usuarioId,id);
 
                     if (eliminacionExitosa)
                     {

@@ -7,9 +7,11 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static pruebaaa.Clases.Chorarios;
+using static pruebaaa.Login;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace pruebaaa
@@ -17,6 +19,7 @@ namespace pruebaaa
     public partial class Horarios : Form
     {
         private Chorarios datos;
+        Cregistromovimientos regis = new Cregistromovimientos();
         public Horarios()
         {
             datos = new Chorarios();
@@ -29,11 +32,7 @@ namespace pruebaaa
             cmbDia.SelectedIndexChanged += cmbDia_SelectedIndexChanged;
             cmbHoraE.SelectedIndexChanged += cmbHoraE_SelectedIndexChanged;
             cmbHoraS.SelectedIndexChanged += cmbHoraS_SelectedIndexChanged;
-            datos.LlenarComboBoxesProfesores(cmbProfesor, cmbProfesorId);
-            datos.LlenarComboBoxesMaterias(cmbMaterias, cmbMateriasId);
-            datos.LlenarComboBoxesAulas(cmbAulas, cmbAulasId);
-            datos.LlenarComboBoxesGrupos(cmbGrupo, cmbGrupoId);
-            datos.LlenarComboBoxesDias(cmbDia, cmbDiaId);
+            LlenarComboboxes();
             datos.LlenarComboBoxHoras(cmbHoraE);
             datos.LlenarComboBoxHoras(cmbHoraS);
             //datos.LlenarComboBoxesHoras(cmbHoraE, cmbHoraEID);
@@ -41,18 +40,17 @@ namespace pruebaaa
         }
         private void Horarios_Load(object sender, EventArgs e)
         {
-            //ocultarcolumnas();
+            
         }
-        //private void ocultarcolumnas()
-        //{
-        //    dgvHorarios.Columns["id_asignatura"].Visible = false;
-        //    dgvHorarios.Columns["id_profesor"].Visible = false;
-        //    dgvHorarios.Columns["id_aula"].Visible = false;
-        //    dgvHorarios.Columns["id_grupo"].Visible = false;
-        //    dgvHorarios.Columns["id_dia_semana"].Visible = false;
-
-        //}
-
+        
+        public void LlenarComboboxes()
+        {
+            datos.LlenarComboBoxesProfesores(cmbProfesor, cmbProfesorId);
+            datos.LlenarComboBoxesMaterias(cmbMaterias, cmbMateriasId);
+            datos.LlenarComboBoxesAulas(cmbAulas, cmbAulasId);
+            datos.LlenarComboBoxesGrupos(cmbGrupo, cmbGrupoId);
+            datos.LlenarComboBoxesDias(cmbDia, cmbDiaId);
+        }
 
 
         private void btnAgregar_Click(object sender, EventArgs e)
@@ -63,6 +61,8 @@ namespace pruebaaa
             int idAula = (cmbAulasId.SelectedItem != null) ? (int)cmbAulasId.SelectedItem : 0;
             int idGrupo = (cmbGrupoId.SelectedItem != null) ? (int)cmbGrupoId.SelectedItem : 0;
             int idDiaSemana = (cmbDiaId.SelectedItem != null) ? (int)cmbDiaId.SelectedItem : 0;
+
+            int usuarioId = ((SEA)this.Owner).UsuarioId;
 
             // Obtener las horas seleccionadas
             string horaEntradaSeleccionada = cmbHoraE.SelectedItem?.ToString();
@@ -94,6 +94,7 @@ namespace pruebaaa
                     cmd.Parameters.AddWithValue("@idGrupo", idGrupo);
                     cmd.Parameters.AddWithValue("@idDiaSemana", idDiaSemana);
 
+
                     // Convertir las horas seleccionadas a TimeSpan
                     TimeSpan horaInicio = TimeSpan.Parse(horaEntradaSeleccionada);
                     TimeSpan horaFin = TimeSpan.Parse(horaSalidaSeleccionada);
@@ -107,10 +108,11 @@ namespace pruebaaa
                 }
 
                 MessageBox.Show("Horario agregado correctamente.");
-
+                regis.RegistrarMovimiento(usuarioId, $"Agregó un horario para la asignatura ID: {idAsignatura}, profesor ID: {idProfesor}, aula ID: {idAula}, grupo ID: {idGrupo}, día ID: {idDiaSemana}, desde {horaEntradaSeleccionada} hasta {horaSalidaSeleccionada}");
                 // Opcional: Actualizar el DataGridView o limpiar los campos
-                // LlenarDataGridView(); // Método para volver a llenar el DataGridView
+                datos.mostrarHorarios(dgvHorarios); // Método para volver a llenar el DataGridView
                 LimpiarCampos(); // Método para limpiar los campos del formulario
+                LlenarComboboxes();
             }
             catch (Exception ex)
             {
@@ -239,37 +241,7 @@ namespace pruebaaa
                 cmbHoraE.SelectedItem = horaEntrada; // Asigna la hora de entrada al ComboBox correspondiente
                 cmbHoraS.SelectedItem = horaSalida;   // Asigna la hora de salida al ComboBox correspondiente
 
-                //// Actualizar el ComboBox de Aulas
-                //foreach (Horas horaE in cmbHoraE.Items)
-                //{
-                //    if (horaE.NombreCompleto == nombreHoraI)
-                //    {
-                //        cmbHoraE.SelectedItem = horaE; // Seleccionar el objeto Aula en el ComboBox visible
-                //        break;
-                //    }
-                //}
-
-                //// Actualizar el ComboBox oculto de Aulas
-                //cmbHoraEID.SelectedItem = idHoraInicio; // Esto almacenará la ID correspondiente en el ComboBox oculto
-
-                //foreach (Horas horaS in cmbHoraS.Items)
-                //{
-                //    if (horaS.NombreCompleto == nombreHoraF)
-                //    {
-                //        cmbHoraS.SelectedItem = horaS; // Seleccionar el objeto Aula en el ComboBox visible
-                //        break;
-                //    }
-                //}
-
-                //// Actualizar el ComboBox oculto de Aulas
-                //cmbHoraSID.SelectedItem = idHoraInicio; // Esto almacenará la ID correspondiente en el ComboBox oculto
-
-
-
-
-
-
-                MessageBox.Show($"ID seleccionada: {idAsignatura}, Nombre: {nombreMateria}, ID Horario: {idHorario}"); // Para verificar
+               
             }
         }
 
@@ -292,6 +264,7 @@ namespace pruebaaa
             int idDiaSemana = (cmbDiaId.SelectedItem != null) ? (int)cmbDiaId.SelectedItem : 0;
             string horaEntradaSeleccionada = cmbHoraE.SelectedItem?.ToString();
             string horaSalidaSeleccionada = cmbHoraS.SelectedItem?.ToString();
+            int usuarioId = ((SEA)this.Owner).UsuarioId;
 
             // Validar que todos los campos requeridos estén completos
             if (idAsignatura == 0 ||
@@ -336,9 +309,10 @@ namespace pruebaaa
                     }
 
                     MessageBox.Show("Horario modificado correctamente.");
-
-                    // Opcional: Actualizar el DataGridView o limpiar los campos
+                    regis.RegistrarMovimiento(usuarioId, $"Modificó un horario para la asignatura ID: {idAsignatura}, profesor ID: {idProfesor}, aula ID: {idAula}, grupo ID: {idGrupo}, día ID: {idDiaSemana}, desde {horaEntradaSeleccionada} hasta {horaSalidaSeleccionada}");
+                    datos.mostrarHorarios(dgvHorarios);// Opcional: Actualizar el DataGridView o limpiar los campos
                     LimpiarCampos(); // Método para limpiar los campos del formulario
+                    LlenarComboboxes();
 
                 }
                 catch (Exception ex)
@@ -368,7 +342,7 @@ namespace pruebaaa
                 cmbMateriasId.SelectedItem = selectedID;
 
                 // Mostrar la ID para verificar (opcional)
-                MessageBox.Show($"ID seleccionada: {selectedID}");
+                //MessageBox.Show($"ID seleccionada: {selectedID}");
             }
         }
 
@@ -421,7 +395,7 @@ namespace pruebaaa
             else
             {
                 // Manejo del caso donde no hay selección
-                MessageBox.Show("Por favor, seleccione un grupo."); // Mensaje al usuario
+                //MessageBox.Show("Por favor, seleccione un grupo."); // Mensaje al usuario
             }
         }
 
@@ -449,69 +423,42 @@ namespace pruebaaa
             else
             {
                 // Manejo del caso donde no hay selección
-                MessageBox.Show("Por favor, seleccione un dia."); // Mensaje al usuario
+                //MessageBox.Show("Por favor, seleccione un dia."); // Mensaje al usuario
             }
         }
 
         private void cmbHoraE_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //if (cmbHoraE.SelectedItem != null)
-            //{
-
-            //    Horas selectedHora = cmbHoraE.SelectedItem as Horas; // Usar 'as' para evitar excepciones
-
-
-            //    if (selectedHora != null)
-            //    {
-            //        // Actualizar el ComboBox oculto con la ID correspondiente
-            //        cmbHoraEID.SelectedItem = selectedHora.id; // Esto almacenará la ID correspondiente en el ComboBox oculto
-
-
-            //    }
-            //    else
-            //    {
-            //        MessageBox.Show("No se pudo obtener la información del dia seleccionado.");
-            //    }
-            //}
-            //else
-            //{
-            //    // Manejo del caso donde no hay selección
-            //    MessageBox.Show("Por favor, seleccione un dia."); // Mensaje al usuario
-            //}
+            
         }
 
         private void cmbHoraS_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //if (cmbHoraS.SelectedItem != null)
-            //{
-
-            //    Horas selectedHora = cmbHoraS.SelectedItem as Horas; // Usar 'as' para evitar excepciones
-
-
-            //    if (selectedHora != null)
-            //    {
-            //        // Actualizar el ComboBox oculto con la ID correspondiente
-            //        cmbHoraSID.SelectedItem = selectedHora.id; // Esto almacenará la ID correspondiente en el ComboBox oculto
-
-
-            //    }
-            //    else
-            //    {
-            //        MessageBox.Show("No se pudo obtener la información del dia seleccionado.");
-            //    }
-            //}
-            //else
-            //{
-            //    // Manejo del caso donde no hay selección
-            //    MessageBox.Show("Por favor, seleccione un dia."); // Mensaje al usuario
-            //}
+           
         }
 
         private void btnDel_Click(object sender, EventArgs e)
         {
-            datos.eliminarHorario(txtId);
-            datos.mostrarHorarios(dgvHorarios);
-            LimpiarCampos();
+            // Verificar si se ha ingresado un ID válido
+            if (string.IsNullOrWhiteSpace(txtId.Text))
+            {
+                MessageBox.Show("Por favor, ingrese un ID válido para eliminar.");
+                return;
+            }
+
+            // Mensaje de verificación
+            var result = MessageBox.Show("¿Está seguro de que desea eliminar este horario?", "Confirmar eliminación",
+                                           MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            int usuarioId = ((SEA)this.Owner).UsuarioId;
+            if (result == DialogResult.Yes)
+            {
+                
+                // Llamar al método para eliminar el horario
+                datos.eliminarHorario(usuarioId, txtId); // Asegúrate de pasar el ID del usuario también
+                datos.mostrarHorarios(dgvHorarios);
+                LimpiarCampos();
+                LlenarComboboxes();
+            }
         }
     }
 }
