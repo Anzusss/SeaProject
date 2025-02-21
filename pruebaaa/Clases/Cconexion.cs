@@ -9,33 +9,59 @@ namespace pruebaaa.Clases
 {
     internal class Cconexion
     {
-        MySqlConnection conex = new MySqlConnection();
+        private MySqlConnection conex;
 
-        static string servidor = "localhost";
-        static string bd = "pruebaconn";
-        static string user = "root";
-        static string pssw = "";
-        static string port = "3306";
+        private static readonly string servidor = "localhost";
+        private static readonly string bd = "pruebaconn";
+        private static readonly string user = "root";
+        private static readonly string pssw = "";
+        private static readonly string port = "3306";
 
-        string cadenaconexion = "server=" + servidor + ";" + "port=" + port + ";" + "user id=" + user + ";" + "password=" + pssw + ";" + "database=" + bd + ";";
-    
-        public MySqlConnection establecerConexion()
+        private static readonly string cadenaconexion = new MySqlConnectionStringBuilder
         {
-            try { 
-                conex.ConnectionString = cadenaconexion;
-                conex.Open();
-                //MessageBox.Show("Se conecto correctamente a la bd");
+            Server = servidor,
+            Port = uint.Parse(port),
+            UserID = user,
+            Password = pssw,
+            Database = bd,
+            SslMode = MySqlSslMode.None
+        }.ToString();
+
+        public Cconexion()
+        {
+            conex = new MySqlConnection(cadenaconexion);
+        }
+
+        public MySqlConnection EstablecerConexion()
+        {
+            try
+            {
+                if (conex.State == System.Data.ConnectionState.Closed)
+                {
+                    conex.Open();
+                }
             }
-            catch(MySqlException e) {
-                MessageBox.Show("No se pudo conextar a la bd, error: " +e.ToString());
+            catch (MySqlException e)
+            {
+                Console.WriteLine($"Error al conectar a la BD: {e.Message}");
+                throw; // Lanza la excepción para que pueda ser manejada en niveles superiores
             }
 
             return conex;
         }
 
-        public void cerrarConexion()
+        public void CerrarConexion()
         {
-            conex.Close();
+            if (conex.State == System.Data.ConnectionState.Open)
+            {
+                conex.Close();
+            }
+        }
+
+        public void Dispose()
+        {
+            CerrarConexion();
+            conex.Dispose();
         }
     }
 }

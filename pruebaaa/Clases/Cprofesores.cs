@@ -29,7 +29,7 @@ namespace pruebaaa.Clases
 
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT CONCAT(cedula, ' - ', nombre, ' ', apellido) AS profesor FROM profesores ORDER BY apellido, nombre";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -60,7 +60,7 @@ namespace pruebaaa.Clases
             List<string> valores = new List<string>();
             try
             {
-                using (MySqlConnection conexion = new Cconexion().establecerConexion())
+                using (MySqlConnection conexion = new Cconexion().EstablecerConexion())
                 {
                     string query = "SHOW COLUMNS FROM profesores WHERE Field = 'sexo'";
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
@@ -93,7 +93,7 @@ namespace pruebaaa.Clases
             try
             {
                 // Crear una nueva conexión para esta operación
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
 
                 // Primero verificamos si el estudiante ya existe
                 string queryVerificar = "SELECT COUNT(*) FROM profesores WHERE cedula = @cedula";
@@ -166,7 +166,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT * FROM profesores WHERE cedula = @cedula";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -207,7 +207,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
 
                 string queryActualizar = @"UPDATE profesores 
                                  SET cedula = @cedula,
@@ -269,7 +269,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string queryEliminar = "DELETE FROM profesores WHERE id = @id";
 
                 using (MySqlCommand cmd = new MySqlCommand(queryEliminar, conex))

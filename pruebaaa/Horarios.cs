@@ -55,75 +55,48 @@ namespace pruebaaa
 
         private void btnAgregar_Click(object sender, EventArgs e)
         {
-            // Obtener los valores de los controles
             int idAsignatura = (cmbMateriasId.SelectedItem != null) ? (int)cmbMateriasId.SelectedItem : 0;
             int idProfesor = (cmbProfesorId.SelectedItem != null) ? (int)cmbProfesorId.SelectedItem : 0;
             int idAula = (cmbAulasId.SelectedItem != null) ? (int)cmbAulasId.SelectedItem : 0;
             int idGrupo = (cmbGrupoId.SelectedItem != null) ? (int)cmbGrupoId.SelectedItem : 0;
             int idDiaSemana = (cmbDiaId.SelectedItem != null) ? (int)cmbDiaId.SelectedItem : 0;
-
             int usuarioId = ((SEA)this.Owner).UsuarioId;
 
-            // Obtener las horas seleccionadas
             string horaEntradaSeleccionada = cmbHoraE.SelectedItem?.ToString();
             string horaSalidaSeleccionada = cmbHoraS.SelectedItem?.ToString();
 
-            // Validar que todos los campos requeridos estén completos
             if (idAsignatura == 0 || idProfesor == 0 || idAula == 0 || idGrupo == 0 || idDiaSemana == 0 ||
-                string.IsNullOrEmpty(horaEntradaSeleccionada) || string.IsNullOrEmpty(horaSalidaSeleccionada))
+       string.IsNullOrEmpty(horaEntradaSeleccionada) || string.IsNullOrEmpty(horaSalidaSeleccionada))
             {
                 MessageBox.Show("Por favor, complete todos los campos requeridos.");
                 return;
             }
 
-            // Construir la consulta SQL para agregar un nuevo horario
-            string query = "INSERT INTO horario (id_asignatura, id_profesor, id_aula, id_grupo, id_dia_semana, hora_entrada, hora_salida) " +
-                           "VALUES (@idAsignatura, @idProfesor, @idAula, @idGrupo, @idDiaSemana, @idHoraInicio, @idHoraFin)";
+            string nombreAsignatura = datos.ObtenerNombreAsignatura(idAsignatura);
+            string nombreProfesor = datos.ObtenerNombreProfesor(idProfesor);
+            string nombreAula = datos.ObtenerNombreAula(idAula);
+            string nombreGrupo = datos.ObtenerNombreGrupo(idGrupo);
+            string nombreDia = datos.ObtenerNombreDia(idDiaSemana);
 
-            MySqlConnection conex = null;
+            string mensaje = $"Agregó un horario para la asignatura {nombreAsignatura} (ID: {idAsignatura}), " +
+                    $"profesor {nombreProfesor} (ID: {idProfesor}), aula {nombreAula} (ID: {idAula}), " +
+                    $"grupo {nombreGrupo} (ID: {idGrupo}), día {nombreDia} (ID: {idDiaSemana}), " +
+                    $"desde {horaEntradaSeleccionada} hasta {horaSalidaSeleccionada}";
 
-            try
+            bool exito = datos.AgregarHorario(idAsignatura, idProfesor, idAula, idGrupo, idDiaSemana, horaEntradaSeleccionada, horaSalidaSeleccionada);
+            
+            if (exito)
             {
-                conex = new Cconexion().establecerConexion();
-                using (MySqlCommand cmd = new MySqlCommand(query, conex))
-                {
-                    // Asignar valores a los parámetros
-                    cmd.Parameters.AddWithValue("@idAsignatura", idAsignatura);
-                    cmd.Parameters.AddWithValue("@idProfesor", idProfesor);
-                    cmd.Parameters.AddWithValue("@idAula", idAula);
-                    cmd.Parameters.AddWithValue("@idGrupo", idGrupo);
-                    cmd.Parameters.AddWithValue("@idDiaSemana", idDiaSemana);
-
-
-                    // Convertir las horas seleccionadas a TimeSpan
-                    TimeSpan horaInicio = TimeSpan.Parse(horaEntradaSeleccionada);
-                    TimeSpan horaFin = TimeSpan.Parse(horaSalidaSeleccionada);
-
-                    // Asignar las horas a los parámetros
-                    cmd.Parameters.AddWithValue("@idHoraInicio", horaInicio);
-                    cmd.Parameters.AddWithValue("@idHoraFin", horaFin);
-
-                    // Ejecutar la consulta
-                    cmd.ExecuteNonQuery();
-                }
-
                 MessageBox.Show("Horario agregado correctamente.");
-                regis.RegistrarMovimiento(usuarioId, $"Agregó un horario para la asignatura ID: {idAsignatura}, profesor ID: {idProfesor}, aula ID: {idAula}, grupo ID: {idGrupo}, día ID: {idDiaSemana}, desde {horaEntradaSeleccionada} hasta {horaSalidaSeleccionada}");
+                regis.RegistrarMovimiento(usuarioId, mensaje);
                 // Opcional: Actualizar el DataGridView o limpiar los campos
                 datos.mostrarHorarios(dgvHorarios); // Método para volver a llenar el DataGridView
                 LimpiarCampos(); // Método para limpiar los campos del formulario
                 LlenarComboboxes();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show($"Error al agregar el horario: {ex.Message}");
-            }
-            finally
-            {
-                if (conex != null && conex.State == ConnectionState.Open)
-                {
-                    conex.Close();
-                }
+                MessageBox.Show("No se pudo agregar el horario.");
             }
         }
         private void LimpiarCampos()
@@ -240,23 +213,16 @@ namespace pruebaaa
 
                 cmbHoraE.SelectedItem = horaEntrada; // Asigna la hora de entrada al ComboBox correspondiente
                 cmbHoraS.SelectedItem = horaSalida;   // Asigna la hora de salida al ComboBox correspondiente
-
-               
             }
         }
-
-
-
         private void btnMod_Click(object sender, EventArgs e)
         {
-            // Obtener el ID del horario que se va a modificar
             if (string.IsNullOrWhiteSpace(txtId.Text) || !int.TryParse(txtId.Text, out int idHorario))
             {
                 MessageBox.Show("Por favor, seleccione un horario válido para modificar.");
                 return;
             }
 
-            // Obtener los valores de los controles
             int idAsignatura = (cmbMateriasId.SelectedItem != null) ? (int)cmbMateriasId.SelectedItem : 0;
             int idProfesor = (cmbProfesorId.SelectedItem != null) ? (int)cmbProfesorId.SelectedItem : 0;
             int idAula = (cmbAulasId.SelectedItem != null) ? (int)cmbAulasId.SelectedItem : 0;
@@ -266,66 +232,56 @@ namespace pruebaaa
             string horaSalidaSeleccionada = cmbHoraS.SelectedItem?.ToString();
             int usuarioId = ((SEA)this.Owner).UsuarioId;
 
-            // Validar que todos los campos requeridos estén completos
-            if (idAsignatura == 0 ||
-                idProfesor == 0 ||
-                idAula == 0 ||
-                idGrupo == 0 ||
-                idDiaSemana == 0)
+            if (idAsignatura == 0 || idProfesor == 0 || idAula == 0 || idGrupo == 0 || idDiaSemana == 0)
             {
                 MessageBox.Show("Por favor, complete todos los campos requeridos.");
                 return;
             }
 
-            // Construir la consulta SQL para modificar el horario
-            string query = "UPDATE horario SET id_asignatura = @idAsignatura, id_profesor = @idProfesor, " +
-                           "id_aula = @idAula, id_grupo = @idGrupo, id_dia_semana = @idDiaSemana, " +
-                           "hora_entrada = @HoraInicio, hora_salida = @HoraFin WHERE id = @idHorario";
+            var horarioAnterior = datos.ObtenerHorarioPorId(idHorario);
 
-            using (MySqlConnection conex = new Cconexion().establecerConexion())
+            if (horarioAnterior == null)
             {
-                try
-                {
-                    // Verificar si la conexión está cerrada antes de abrirla
-                    if (conex.State != ConnectionState.Open)
-                    {
-                        conex.Open();
-                    }
+                MessageBox.Show("No se encontró el horario a modificar.");
+                return;
+            }
 
-                    using (MySqlCommand cmd = new MySqlCommand(query, conex))
-                    {
-                        // Asignar valores a los parámetros
-                        cmd.Parameters.AddWithValue("@idHorario", idHorario);
-                        cmd.Parameters.AddWithValue("@idAsignatura", idAsignatura);
-                        cmd.Parameters.AddWithValue("@idProfesor", idProfesor);
-                        cmd.Parameters.AddWithValue("@idAula", idAula);
-                        cmd.Parameters.AddWithValue("@idGrupo", idGrupo);
-                        cmd.Parameters.AddWithValue("@idDiaSemana", idDiaSemana);
-                        cmd.Parameters.AddWithValue("@HoraInicio", horaEntradaSeleccionada);
-                        cmd.Parameters.AddWithValue("@HoraFin", horaSalidaSeleccionada);
+            // Obtener nombres antes de modificar
+            string asignaturaAnterior = datos.ObtenerNombreAsignatura(horarioAnterior.IdAsignatura);
+            string profesorAnterior = datos.ObtenerNombreProfesor(horarioAnterior.IdProfesor);
+            string aulaAnterior = datos.ObtenerNombreAula(horarioAnterior.IdAula);
+            string grupoAnterior = datos.ObtenerNombreGrupo(horarioAnterior.IdGrupo);
+            string diaAnterior = datos.ObtenerNombreDia(horarioAnterior.IdDiaSemana);
 
-                        // Ejecutar la consulta
-                        cmd.ExecuteNonQuery();
-                    }
+            // Obtener nombres nuevos
+            string asignaturaNueva = datos.ObtenerNombreAsignatura(idAsignatura);
+            string profesorNuevo = datos.ObtenerNombreProfesor(idProfesor);
+            string aulaNueva = datos.ObtenerNombreAula(idAula);
+            string grupoNuevo = datos.ObtenerNombreGrupo(idGrupo);
+            string diaNuevo = datos.ObtenerNombreDia(idDiaSemana);
 
-                    MessageBox.Show("Horario modificado correctamente.");
-                    regis.RegistrarMovimiento(usuarioId, $"Modificó un horario para la asignatura ID: {idAsignatura}, profesor ID: {idProfesor}, aula ID: {idAula}, grupo ID: {idGrupo}, día ID: {idDiaSemana}, desde {horaEntradaSeleccionada} hasta {horaSalidaSeleccionada}");
-                    datos.mostrarHorarios(dgvHorarios);// Opcional: Actualizar el DataGridView o limpiar los campos
-                    LimpiarCampos(); // Método para limpiar los campos del formulario
-                    LlenarComboboxes();
+            string mensaje = $"Modificó el horario con ID: {idHorario}\n" +
+                $"**Antes:** {asignaturaAnterior} (ID: {horarioAnterior.IdAsignatura}), " +
+                $"{profesorAnterior} (ID: {horarioAnterior.IdProfesor}), " +
+                $"{aulaAnterior} (ID: {horarioAnterior.IdAula}), " +
+                $"{grupoAnterior} (ID: {horarioAnterior.IdGrupo}), " +
+                $"{diaAnterior} (ID: {horarioAnterior.IdDiaSemana}), " +
+                $"de {horarioAnterior.HoraEntrada} a {horarioAnterior.HoraSalida}\n" +
+                $"**Después:** {asignaturaNueva} (ID: {idAsignatura}), " +
+                $"{profesorNuevo} (ID: {idProfesor}), " +
+                $"{aulaNueva} (ID: {idAula}), " +
+                $"{grupoNuevo} (ID: {idGrupo}), " +
+                $"{diaNuevo} (ID: {idDiaSemana}), " +
+                $"de {horaEntradaSeleccionada} a {horaSalidaSeleccionada}";
 
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error al modificar el horario: {ex.Message}");
-                }
-                finally
-                {
-                    if (conex.State == ConnectionState.Open)
-                    {
-                        conex.Close(); // Cerrar la conexión si está abierta
-                    }
-                }
+            bool resultado = datos.ModificarHorario(idHorario, idAsignatura, idProfesor, idAula, idGrupo, idDiaSemana, horaEntradaSeleccionada, horaSalidaSeleccionada);
+            if (resultado)
+            {
+                MessageBox.Show("Horario modificado correctamente.");
+                regis.RegistrarMovimiento(usuarioId, mensaje);
+                datos.mostrarHorarios(dgvHorarios);
+                LimpiarCampos();
+                LlenarComboboxes();
             }
         }
 
@@ -450,6 +406,7 @@ namespace pruebaaa
             var result = MessageBox.Show("¿Está seguro de que desea eliminar este horario?", "Confirmar eliminación",
                                            MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             int usuarioId = ((SEA)this.Owner).UsuarioId;
+
             if (result == DialogResult.Yes)
             {
                 

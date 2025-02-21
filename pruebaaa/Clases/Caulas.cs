@@ -20,13 +20,13 @@ namespace pruebaaa.Clases
                 string query = "select * from aulas";
                 Cconexion objConex = new Cconexion();
                 tablaAulas.DataSource = null;
-                MySqlDataAdapter adapter = new MySqlDataAdapter(query, objConex.establecerConexion());
+                MySqlDataAdapter adapter = new MySqlDataAdapter(query, objConex.EstablecerConexion());
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
                         string disponible = "disponible".ToString();
 
                 tablaAulas.DataSource = dt;
-                objConex.cerrarConexion();
+                objConex.CerrarConexion();
 			}
 			catch (Exception ex)
 			{
@@ -38,7 +38,7 @@ namespace pruebaaa.Clases
             List<string> valores = new List<string>();
             try
             {
-                using (MySqlConnection conexion = new Cconexion().establecerConexion())
+                using (MySqlConnection conexion = new Cconexion().EstablecerConexion())
                 {
                     string query = "SHOW COLUMNS FROM aulas WHERE Field = 'disponible'";
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
@@ -68,7 +68,7 @@ namespace pruebaaa.Clases
                 Cconexion objConex = new Cconexion();
                 string query = "insert into aulas (nombre, capacidad)"+
                     "values ('"+ nombre.Text+ "','"+capacidad.Text+"');";
-                MySqlCommand cmd = new MySqlCommand(query, objConex.establecerConexion());
+                MySqlCommand cmd = new MySqlCommand(query, objConex.EstablecerConexion());
                 MySqlDataReader reader = cmd.ExecuteReader();
                 regis.RegistrarMovimiento(usuarioID, $"Agregó un aula: {nombre}");
                 MessageBox.Show("Se guardo correctamente el aula");
@@ -76,7 +76,7 @@ namespace pruebaaa.Clases
                 {
 
                 }
-                objConex.cerrarConexion();
+                objConex.CerrarConexion();
             }
             catch (Exception ex)
             {
@@ -103,7 +103,7 @@ namespace pruebaaa.Clases
             {
                 Cconexion objConex = new Cconexion();
                 string query = "update aulas set nombre='" + nombre.Text + "', capacidad ='" + capacidad.Text + "', disponible ='" + disponible.Text + "' where id ='"+ id.Text+"';";
-                MySqlCommand cmd = new MySqlCommand(query, objConex.establecerConexion());
+                MySqlCommand cmd = new MySqlCommand(query, objConex.EstablecerConexion());
                 MySqlDataReader reader = cmd.ExecuteReader();
                 
                 MessageBox.Show("Se modifico correctamente el aula");
@@ -112,7 +112,7 @@ namespace pruebaaa.Clases
 
                 }
                 regis.RegistrarMovimiento(usuarioID, "Modificó un aula");
-                objConex.cerrarConexion();
+                objConex.CerrarConexion();
             }
             catch (Exception ex)
             {
@@ -125,7 +125,7 @@ namespace pruebaaa.Clases
             {
                 Cconexion objConex = new Cconexion();
                 string query = "delete from aulas where id ='" + id.Text + "';";
-                MySqlCommand cmd = new MySqlCommand(query, objConex.establecerConexion());
+                MySqlCommand cmd = new MySqlCommand(query, objConex.EstablecerConexion());
                 MySqlDataReader reader = cmd.ExecuteReader();
                 regis.RegistrarMovimiento(usuarioID, $"Eliminó un aula");
                 MessageBox.Show("Se elimino correctamente el aula");
@@ -133,7 +133,7 @@ namespace pruebaaa.Clases
                 {
 
                 }
-                objConex.cerrarConexion();
+                objConex.CerrarConexion();
             }
             catch (Exception ex)
             {

@@ -53,7 +53,7 @@ namespace pruebaaa.Clases
 
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT CONCAT(LoginName, ' - ', FirstName, ' ', LastName) AS usuario FROM users ORDER BY LastName, FirstName";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -86,7 +86,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT * FROM users WHERE LoginName = @LoginName";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -128,7 +128,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string queryEliminar = "DELETE FROM users WHERE UserID = @id";
 
                 using (MySqlCommand cmd = new MySqlCommand(queryEliminar, conex))
@@ -172,7 +172,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
 
                 string queryActualizar = @"UPDATE users SET Position = @Position WHERE UserID = @id";
 

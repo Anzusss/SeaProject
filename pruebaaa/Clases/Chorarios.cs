@@ -114,7 +114,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT id, nombre FROM materias ORDER BY id";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -164,7 +164,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT id, nombre, apellido FROM profesores ORDER BY id";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -215,7 +215,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT id, nombre, capacidad FROM aulas where disponible = 'Si' ORDER BY id"; // Filtrar por disponibilidad
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -273,7 +273,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT id, nombre FROM grupos ORDER BY id"; // Ajusta la consulta según tu base de datos
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -329,7 +329,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT id, nombre FROM dia_semana ORDER BY id"; // Ajusta la consulta según tu base de datos
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -415,7 +415,7 @@ JOIN
                 Cconexion objConex = new Cconexion();
                 tablaHorarios.DataSource = null;
 
-                using (MySqlDataAdapter adapter = new MySqlDataAdapter(query, objConex.establecerConexion()))
+                using (MySqlDataAdapter adapter = new MySqlDataAdapter(query, objConex.EstablecerConexion()))
                 {
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
@@ -438,13 +438,20 @@ JOIN
                 tablaHorarios.Columns["id_grupo"].Visible = false;      // Ocultar columna ID Grupo
                 tablaHorarios.Columns["id_dia_semana"].Visible = false;
 
-                objConex.cerrarConexion();
+                objConex.CerrarConexion();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("No se mostraron los horarios correctamente: " + ex.ToString());
             }
         }
+
+        /// Inicio de la logica del crud 
+        ///
+        /// 
+        /// 
+        /// Luis Perez
+
 
         public void eliminarHorario(int usuarioID, TextBox id)
         {
@@ -453,7 +460,7 @@ JOIN
             {
                 string query = "DELETE FROM horario WHERE id = @id"; // Usar un parámetro en lugar de concatenar
 
-                using (MySqlCommand cmd = new MySqlCommand(query, objConex.establecerConexion()))
+                using (MySqlCommand cmd = new MySqlCommand(query, objConex.EstablecerConexion()))
                 {
                     // Asignar el valor del parámetro
                     cmd.Parameters.AddWithValue("@id", id.Text);
@@ -480,8 +487,186 @@ JOIN
             }
             finally
             {
-                objConex.cerrarConexion(); // Asegúrate de cerrar la conexión en el bloque finally
+                objConex.CerrarConexion(); // Asegúrate de cerrar la conexión en el bloque finally
             }
+        }
+
+        public bool ModificarHorario(int idHorario, int idAsignatura, int idProfesor, int idAula, int idGrupo, int idDiaSemana, string horaEntrada, string horaSalida)
+        {
+            string query = "UPDATE horario SET id_asignatura = @idAsignatura, id_profesor = @idProfesor, " +
+                       "id_aula = @idAula, id_grupo = @idGrupo, id_dia_semana = @idDiaSemana, " +
+                       "hora_entrada = @HoraInicio, hora_salida = @HoraFin WHERE id = @idHorario";
+
+            using (MySqlConnection conex = new Cconexion().EstablecerConexion())
+            {
+                try
+                {
+                    if (conex.State != ConnectionState.Open)
+                    {
+                        conex.Open();
+                    }
+                    using (MySqlCommand cmd = new MySqlCommand(query, conex))
+                    {
+                        cmd.Parameters.AddWithValue("@idHorario", idHorario);
+                        cmd.Parameters.AddWithValue("@idAsignatura", idAsignatura);
+                        cmd.Parameters.AddWithValue("@idProfesor", idProfesor);
+                        cmd.Parameters.AddWithValue("@idAula", idAula);
+                        cmd.Parameters.AddWithValue("@idGrupo", idGrupo);
+                        cmd.Parameters.AddWithValue("@idDiaSemana", idDiaSemana);
+                        cmd.Parameters.AddWithValue("@HoraInicio", horaEntrada);
+                        cmd.Parameters.AddWithValue("@HoraFin", horaSalida);
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al modificar el horario: {ex.Message}");
+                    return false; // Indica que hubo un error
+                }
+                finally
+                {
+                    if (conex.State == ConnectionState.Open)
+                    {
+                        conex.Close();
+                    }
+                }
+            }
+        }
+
+        public bool AgregarHorario(int idAsignatura, int idProfesor, int idAula, int idGrupo, int idDiaSemana, string horaEntrada, string horaSalida)
+        {
+            string query = "INSERT INTO horario (id_asignatura, id_profesor, id_aula, id_grupo, id_dia_semana, hora_entrada, hora_salida) " +
+                   "VALUES (@idAsignatura, @idProfesor, @idAula, @idGrupo, @idDiaSemana, @idHoraInicio, @idHoraFin)";
+            MySqlConnection conex = null;
+
+            try
+            {
+                conex = new Cconexion().EstablecerConexion();
+                using (MySqlCommand cmd = new MySqlCommand(query, conex))
+                {
+                    cmd.Parameters.AddWithValue("@idAsignatura", idAsignatura);
+                    cmd.Parameters.AddWithValue("@idProfesor", idProfesor);
+                    cmd.Parameters.AddWithValue("@idAula", idAula);
+                    cmd.Parameters.AddWithValue("@idGrupo", idGrupo);
+                    cmd.Parameters.AddWithValue("@idDiaSemana", idDiaSemana);
+
+                    // Convertir las horas seleccionadas a TimeSpan
+                    TimeSpan horaInicio = TimeSpan.Parse(horaEntrada);
+                    TimeSpan horaFin = TimeSpan.Parse(horaSalida);
+
+                    cmd.Parameters.AddWithValue("@idHoraInicio", horaInicio);
+                    cmd.Parameters.AddWithValue("@idHoraFin", horaFin);
+
+                    cmd.ExecuteNonQuery();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al agregar el horario: {ex.Message}");
+                return false; // Si ocurrió un error
+            }
+            finally
+            {
+                if (conex != null && conex.State == ConnectionState.Open)
+                {
+                    conex.Close();
+                }
+            }
+        }
+
+        ///Obtencion de nombres para registro
+        ///
+        ///
+        ///
+        ///Luis Perez
+        private string ObtenerNombre(string query, string paramName, int id)
+        {
+            string nombre = "";
+
+            using (MySqlConnection conex = new Cconexion().EstablecerConexion())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conex))
+                {
+                    cmd.Parameters.AddWithValue(paramName, id);
+                    object result = cmd.ExecuteScalar();
+                    nombre = result != null ? result.ToString() : "Desconocido";
+                }
+            }
+
+            return nombre;
+        }
+
+        public string ObtenerNombreAsignatura(int idAsignatura)
+        {
+            return ObtenerNombre("SELECT nombre FROM materias WHERE id = @id", "@id", idAsignatura);
+        }
+
+        public string ObtenerNombreProfesor(int idProfesor)
+        {
+            return ObtenerNombre("SELECT CONCAT (nombre, ' ' , apellido) FROM profesores WHERE id = @id", "@id", idProfesor);
+        }
+
+        public string ObtenerNombreAula(int idAula)
+        {
+            return ObtenerNombre("SELECT nombre FROM aulas WHERE id = @id", "@id", idAula);
+        }
+
+        public string ObtenerNombreGrupo(int idGrupo)
+        {
+            return ObtenerNombre("SELECT nombre FROM grupos WHERE id = @id", "@id", idGrupo);
+        }
+
+        public string ObtenerNombreDia(int idDiaSemana)
+        {
+            return ObtenerNombre("SELECT nombre FROM dia_semana WHERE id = @id", "@id", idDiaSemana);
+        }
+
+        ///Obtencion de antes y despues para boton modificar
+
+        public class Horario
+        {
+            public int IdAsignatura { get; set; }
+            public int IdProfesor { get; set; }
+            public int IdAula { get; set; }
+            public int IdGrupo { get; set; }
+            public int IdDiaSemana { get; set; }
+            public TimeSpan HoraEntrada { get; set; }
+            public TimeSpan HoraSalida { get; set; }
+        }
+
+        public Horario ObtenerHorarioPorId(int idHorario)
+        {
+            string query = "SELECT id_asignatura, id_profesor, id_aula, id_grupo, id_dia_semana, hora_entrada, hora_salida " +
+                           "FROM horario WHERE id = @idHorario";
+
+            using (MySqlConnection conex = new Cconexion().EstablecerConexion())
+            {
+                using (MySqlCommand cmd = new MySqlCommand(query, conex))
+                {
+                    cmd.Parameters.AddWithValue("@idHorario", idHorario);
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Horario
+                            {
+                                IdAsignatura = reader.GetInt32("id_asignatura"),
+                                IdProfesor = reader.GetInt32("id_profesor"),
+                                IdAula = reader.GetInt32("id_aula"),
+                                IdGrupo = reader.GetInt32("id_grupo"),
+                                IdDiaSemana = reader.GetInt32("id_dia_semana"),
+                                HoraEntrada = reader.GetTimeSpan("hora_entrada"),  // CORREGIDO
+                                HoraSalida = reader.GetTimeSpan("hora_salida")    // CORREGIDO
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }

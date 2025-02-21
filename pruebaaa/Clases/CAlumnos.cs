@@ -28,7 +28,7 @@ namespace pruebaaa.Clases
 
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT CONCAT(cedula, ' - ', nombre, ' ', apellido) AS estudiante FROM estudiantes ORDER BY apellido, nombre";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -59,7 +59,7 @@ namespace pruebaaa.Clases
             List<string> valores = new List<string>();
             try
             {
-                using (MySqlConnection conexion = new Cconexion().establecerConexion())
+                using (MySqlConnection conexion = new Cconexion().EstablecerConexion())
                 {
                     string query = "SHOW COLUMNS FROM estudiantes WHERE Field = 'sexo'";
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
@@ -92,7 +92,7 @@ namespace pruebaaa.Clases
             try
             {
                 // Crear una nueva conexión para esta operación
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
 
                 // Primero verificamos si el estudiante ya existe
                 string queryVerificar = "SELECT COUNT(*) FROM estudiantes WHERE cedula = @cedula";
@@ -165,7 +165,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT * FROM estudiantes WHERE cedula = @cedula";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -207,7 +207,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
 
                 string queryActualizar = @"UPDATE estudiantes 
                                  SET cedula = @cedula,
@@ -273,7 +273,7 @@ namespace pruebaaa.Clases
 
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
 
                 // Primero, obtenemos los datos del estudiante
                 string queryObtenerDatos = "SELECT nombre, apellido, cedula FROM estudiantes WHERE id = @id";

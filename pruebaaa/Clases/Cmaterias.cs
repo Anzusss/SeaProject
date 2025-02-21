@@ -32,7 +32,7 @@ namespace pruebaaa.Clases
 
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT id, nombre FROM departamento ORDER BY nombre";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -70,7 +70,7 @@ namespace pruebaaa.Clases
 
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT CONCAT(nombre, ' - ', matricula) AS materia FROM materias ORDER BY nombre";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -103,7 +103,7 @@ namespace pruebaaa.Clases
             try
             {
                 // Crear una nueva conexión para esta operación
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
 
                 // Primero verificamos si la materia ya existe con el mismo nombre y profesor
                 string queryVerificar = "SELECT COUNT(*) FROM materias WHERE nombre = @nombre";
@@ -173,7 +173,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string query = "SELECT * FROM materias WHERE nombre = @nombre";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conex))
@@ -212,7 +212,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
 
                 string queryActualizar = @"UPDATE materias SET nombre = @nombre, descripcion = @descripcion, id_categoria = @id_categoria WHERE id = @id";
 
@@ -263,7 +263,7 @@ namespace pruebaaa.Clases
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
                 string queryEliminar = "DELETE FROM materias WHERE id = @id";
 
                 using (MySqlCommand cmd = new MySqlCommand(queryEliminar, conex))

@@ -17,14 +17,14 @@ namespace pruebaaa.Clases
                 string query = "SELECT t.id, CONCAT(DATE_FORMAT(t.fecha, '%d/%m/%Y %H:%i:%s'), ' - ', t.accion, ' - Usuario: ', u.LoginName,' - ', u.FirstName,' ', u.LastName) AS registro_completo FROM registros t INNER JOIN users u ON t.userid = u.UserID;";
                 Cconexion objConex = new Cconexion();
                 tablaAulas.DataSource = null;
-                MySqlDataAdapter adapter = new MySqlDataAdapter(query, objConex.establecerConexion());
+                MySqlDataAdapter adapter = new MySqlDataAdapter(query, objConex.EstablecerConexion());
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
                 
 
                 tablaAulas.DataSource = dt;
                 tablaAulas.Columns[0].Visible = false;
-                objConex.cerrarConexion();
+                objConex.CerrarConexion();
             }
             catch (Exception ex)
             {

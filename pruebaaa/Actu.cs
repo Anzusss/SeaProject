@@ -162,7 +162,7 @@ namespace pruebaaa
             MySqlConnection conex = null;
             try
             {
-                conex = new Cconexion().establecerConexion();
+                conex = new Cconexion().EstablecerConexion();
 
                 string hashedPassword = HashPassword(password);
 
